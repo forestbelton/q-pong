@@ -1,8 +1,8 @@
 // @flow
-import Game from './lib/Game'
+import Grid from './lib/Grid'
 
 const canvas: HTMLCanvasElement = document.getElementById('game')
 const context = canvas.getContext('2d')
 
-const game = new Game(canvas.width, canvas.height)
+const game = new Grid(canvas.width, canvas.height)
 game.draw(context)
