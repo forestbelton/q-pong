@@ -13,6 +13,8 @@ const agents = [
 ]
 
 function draw() {
+    game.update()
+
     agents.forEach(agent => {
         const direction = agent.decideMove(game)
         game.move(agent.player, direction)
