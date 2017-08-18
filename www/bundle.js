@@ -93,6 +93,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MOVE_AMOUNT = 1;
+var MAX_BOUNCE_ANGLE = Math.PI * 5 / 12;
+var START_CONE = Math.PI * 1 / 6;
 
 var Grid = function () {
     function Grid(width, height) {
@@ -103,8 +105,10 @@ var Grid = function () {
 
         this.ball = new _Ball2.default(width, height);
 
-        var velocityX = Math.floor(Math.random() * 2) > 0 ? 1 : -1;
-        var velocityY = Math.floor(Math.random() * 2) > 0 ? 1 : -1;
+        var angle = START_CONE * Math.random() - START_CONE / 2;
+
+        var velocityX = Math.random() > 0.5 ? Math.cos(angle) : -Math.cos(angle);
+        var velocityY = -Math.sin(angle);
 
         this.ballVelocity = {
             x: velocityX,
@@ -140,24 +144,43 @@ var Grid = function () {
             ball.x += this.ballVelocity.x;
             ball.y += this.ballVelocity.y;
 
+            var collisionAbove = ball.y - ball.radius <= 0;
+            var collisionBelow = ball.y + ball.radius >= this.height;
+
+            if (collisionAbove || collisionBelow) {
+                this.ballVelocity.y = -this.ballVelocity.y;
+
+                // Prevent the ball from leaving the screen
+                if (collisionAbove) {
+                    this.ball.y = this.ball.radius;
+                } else {
+                    this.ball.y = this.height - this.ball.radius;
+                }
+            }
+
             var players = Object.values(this.players);
             players.forEach(function (player) {
-                var boundedLeft = ball.x - ball.radius > player.x - Math.floor(player.width / 2);
-                var boundedRight = ball.x - ball.radius < player.x + Math.floor(player.width / 2);
+                if (_this.collides(ball, player)) {
+                    if (Math.sign(_this.ballVelocity.x) === Math.sign(player.x - ball.x)) {
+                        var intersectY = player.y - ball.y;
+                        var normalized = intersectY / (player.height / 2);
+                        var angle = normalized * MAX_BOUNCE_ANGLE;
 
-                var boundedAbove = ball.y - ball.radius > player.y - player.height;
-                var boundedBelow = ball.y - ball.radius < player.y + player.height;
-
-                var checks = [boundedLeft, boundedRight, boundedAbove, boundedBelow];
-
-                // cheap hack instead of determining collision properly
-                if (checks.every(function (check) {
-                    return check;
-                })) {
-                    _this.ballVelocity.x = -_this.ballVelocity.x;
-                    _this.ballVelocity.y = -_this.ballVelocity.y;
+                        _this.ballVelocity.x = Math.cos(angle) * -Math.sign(_this.ballVelocity.x);
+                        _this.ballVelocity.y = -Math.sin(angle);
+                    }
                 }
             });
+        }
+    }, {
+        key: 'collides',
+        value: function collides(ball, player) {
+            var rectX = player.x - Math.floor(player.width / 2);
+            var rectY = player.y - Math.floor(player.height / 2);
+            var deltaX = ball.x - Math.max(rectX, Math.min(ball.x, rectX + player.width));
+            var deltaY = ball.y - Math.max(rectY, Math.min(ball.y, rectY + player.height));
+
+            return deltaX * deltaX + deltaY * deltaY < ball.radius * ball.radius;
         }
     }, {
         key: 'draw',
@@ -288,7 +311,7 @@ var Player = function (_Entity) {
 
         var margin = Math.floor(width / 20);
 
-        var x0 = who == Player.ONE ? margin : width - margin - playerWidth;
+        var x0 = who == Player.ONE ? margin + Math.floor(playerWidth / 2) : width - margin - Math.floor(playerWidth / 2);
         var y0 = Math.floor(width / 2);
 
         var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, x0, y0));
@@ -303,8 +326,9 @@ var Player = function (_Entity) {
         value: function draw(context) {
             context.fillStyle = 'rgb(255, 255, 255)';
 
+            var x = this.x - Math.floor(this.width / 2);
             var y = this.y - Math.floor(this.height / 2);
-            context.fillRect(this.x, y, this.width, this.height);
+            context.fillRect(x, y, this.width, this.height);
         }
     }]);
 
@@ -519,8 +543,8 @@ var Ball = function (_Entity) {
         _classCallCheck(this, Ball);
 
         var radius = Math.floor(width / 50);
-        var x = Math.floor(width / 2) - radius;
-        var y = Math.floor(height / 2) - radius;
+        var x = Math.floor(width / 2);
+        var y = Math.floor(height / 2);
 
         var _this = _possibleConstructorReturn(this, (Ball.__proto__ || Object.getPrototypeOf(Ball)).call(this, x, y));
 
@@ -533,11 +557,8 @@ var Ball = function (_Entity) {
         value: function draw(context) {
             context.fillStyle = 'rgb(255, 255, 255)';
 
-            var x = this.x + this.radius;
-            var y = this.y + this.radius;
-
             context.beginPath();
-            context.arc(x, y, this.radius, 0, 2 * Math.PI, true);
+            context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, true);
             context.fill();
         }
     }]);
