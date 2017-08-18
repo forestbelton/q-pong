@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -80,7 +80,7 @@ var _Action = __webpack_require__(1);
 
 var _Action2 = _interopRequireDefault(_Action);
 
-var _Ball = __webpack_require__(5);
+var _Ball = __webpack_require__(6);
 
 var _Ball2 = _interopRequireDefault(_Ball);
 
@@ -103,11 +103,8 @@ var Grid = function () {
 
         this.ball = new _Ball2.default(width, height);
 
-        //const velocityX = Math.floor(Math.random() * 2) > 0 ? 1 : -1
-        //const velocityY = Math.floor(Math.random() * 2) > 0 ? 1 : -1
-
         var velocityX = Math.floor(Math.random() * 2) > 0 ? 1 : -1;
-        var velocityY = -1;
+        var velocityY = Math.floor(Math.random() * 2) > 0 ? 1 : -1;
 
         this.ballVelocity = {
             x: velocityX,
@@ -167,6 +164,16 @@ var Grid = function () {
         value: function draw(context) {
             context.fillStyle = 'rgb(0,0,0)';
             context.fillRect(0, 0, this.width, this.height);
+
+            // draw center divider
+            context.strokeStyle = 'rgb(255,255,255)';
+            context.beginPath();
+            context.setLineDash([5, 15]);
+            context.lineWidth = Math.floor(this.width / 50);
+            var midpoint = Math.floor(this.width / 2);
+            context.moveTo(midpoint, 0);
+            context.lineTo(midpoint, this.height);
+            context.stroke();
 
             this.ball.draw(context);
 
@@ -359,15 +366,63 @@ exports.default = Entity;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _Action = __webpack_require__(1);
+
+var _Action2 = _interopRequireDefault(_Action);
+
 var _Grid = __webpack_require__(0);
 
 var _Grid2 = _interopRequireDefault(_Grid);
 
-var _FollowingAgent = __webpack_require__(6);
+var _Player = __webpack_require__(2);
+
+var _Player2 = _interopRequireDefault(_Player);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Agent = function () {
+    function Agent(player) {
+        _classCallCheck(this, Agent);
+
+        this.player = player;
+    }
+
+    _createClass(Agent, [{
+        key: 'act',
+        value: function act(game) {
+            throw new Error('not implemented');
+        }
+    }]);
+
+    return Agent;
+}();
+
+exports.default = Agent;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _Grid = __webpack_require__(0);
+
+var _Grid2 = _interopRequireDefault(_Grid);
+
+var _FollowingAgent = __webpack_require__(7);
 
 var _FollowingAgent2 = _interopRequireDefault(_FollowingAgent);
 
-var _QLearningAgent = __webpack_require__(7);
+var _QLearningAgent = __webpack_require__(8);
 
 var _QLearningAgent2 = _interopRequireDefault(_QLearningAgent);
 
@@ -433,7 +488,7 @@ function draw() {
 window.requestAnimationFrame(draw);
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -493,7 +548,7 @@ var Ball = function (_Entity) {
 exports.default = Ball;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -509,7 +564,7 @@ var _Action = __webpack_require__(1);
 
 var _Action2 = _interopRequireDefault(_Action);
 
-var _Agent2 = __webpack_require__(8);
+var _Agent2 = __webpack_require__(4);
 
 var _Agent3 = _interopRequireDefault(_Agent2);
 
@@ -563,7 +618,7 @@ var FollowingAgent = function (_Agent) {
 exports.default = FollowingAgent;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -579,7 +634,7 @@ var _Action = __webpack_require__(1);
 
 var _Action2 = _interopRequireDefault(_Action);
 
-var _Agent2 = __webpack_require__(8);
+var _Agent2 = __webpack_require__(4);
 
 var _Agent3 = _interopRequireDefault(_Agent2);
 
@@ -646,54 +701,6 @@ var QLearningAgent = function (_Agent) {
 exports.default = QLearningAgent;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Action = __webpack_require__(1);
-
-var _Action2 = _interopRequireDefault(_Action);
-
-var _Grid = __webpack_require__(0);
-
-var _Grid2 = _interopRequireDefault(_Grid);
-
-var _Player = __webpack_require__(2);
-
-var _Player2 = _interopRequireDefault(_Player);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Agent = function () {
-    function Agent(player) {
-        _classCallCheck(this, Agent);
-
-        this.player = player;
-    }
-
-    _createClass(Agent, [{
-        key: 'act',
-        value: function act(game) {
-            throw new Error('not implemented');
-        }
-    }]);
-
-    return Agent;
-}();
-
-exports.default = Agent;
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -729,14 +736,10 @@ var Q = function () {
 
             // lazily initialize table entry
             if (typeof this.table[hash] == 'undefined') {
-                console.log('MISS');
-
                 this.table[hash] = {};
                 this.actions.forEach(function (action) {
                     return _this.table[hash][action] = Math.random();
                 });
-            } else {
-                console.log('HIT');
             }
 
             return this.table[hash];
