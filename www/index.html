@@ -8,10 +8,18 @@
     display: block;
     margin: 100px auto 0;
 }
+
+.summary {
+    text-align: center
+}
         </style>
     </head>
     <body>
-        <canvas id="game" width="500" height="500"></canvas>
+        <div class="summary">
+            <span>QLearningAgent wins:</span>
+            <span id="summaryWins">0/0 (0.00%)</span>
+        </div>
+        <canvas id="game" width="300" height="300"></canvas>
         <script src="bundle.js"></script>
     </body>
 </html>
